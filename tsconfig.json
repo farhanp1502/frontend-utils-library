@@ -8,6 +8,9 @@
     "paths": {
       "dynamic-form": [
         "dist/dynamic-form"
+      ],
+      "forms": [
+        "./dist/forms"
       ]
     },
     "strict": true,
