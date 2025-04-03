@@ -8,34 +8,30 @@ import { ApiBaseService } from './service/api-base/api-base.service';
   providedIn: 'root'
 })
 export class FormsService {
-  private formsConfigSubject = new BehaviorSubject<any>(null); // Initialize with null
-  formsConfig$ = this.formsConfigSubject.asObservable(); // Expose Observable
+  private formsConfigSubject = new BehaviorSubject<any>(null); 
+  formsConfig$ = this.formsConfigSubject.asObservable();
 
   setFormsConfig(config: any): void {
-    console.log("Setting Forms Config:", config);
-    this.formsConfigSubject.next(config); // Update the stored data
+    this.formsConfigSubject.next(config);
   }
 
   constructor(private apiBaseService: ApiBaseService, private indexDb: DbService) {}
 
   getForm(formConfig: any): Observable<any> {
-    return from(this.indexDb.getTransaction(formConfig.payload.subType)).pipe(
+    return from(this.indexDb.getTransaction(`${formConfig.payload.type}_${formConfig.payload.subType}`)).pipe(
       switchMap((dbResponse: any) => {
         if (dbResponse) {
-          console.log("Fetching data from IndexedDB:", dbResponse);
-          return of(dbResponse); // Return from IndexedDB
+          return of(dbResponse);
         } else {
-          console.log("Fetching data from API...");
           return this.apiBaseService.post(formConfig.url, formConfig.payload).pipe(
             switchMap((apiResponse: any) => {
               if (apiResponse) {
-                console.log("Storing API response to IndexedDB...");
                 const dataToStore = {
-                  key: formConfig.payload.subType,
+                  key: `${formConfig.payload.type}_${formConfig.payload.subType}`,
                   data: apiResponse
                 };
                 return from(this.indexDb.addData(dataToStore)).pipe(
-                  map(() => dataToStore) // Return API response after storing it
+                  map(() => dataToStore)
                 );
               } else {
                 return of(null);

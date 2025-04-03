@@ -75,7 +75,6 @@ export class DbService {
   }
 
   addData(data: any): Promise<IDBValidKey> {
-    console.log('Adding data to IndexedDB:', data);
     return new Promise((resolve, reject) => {
       if (!this.db) {
         console.error('Database not initialized');
@@ -171,6 +170,5 @@ export class DbService {
   async clearDatabase(){
     await this.initializeDb();
     await this.clearDb(this.db, this.formsConfig.db.dbName);
-    // await this.clearDb(this.db, 'downloadedProjects');
   }
 }
